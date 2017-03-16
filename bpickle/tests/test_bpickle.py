@@ -83,7 +83,7 @@ class BPickleTest(unittest.TestCase):
         If loads table somehow ends up using load function that does not
         return a tuple of value and position, ValueError is thrown.
         """
-        loads_table = {"s": lambda self, obj: []}
+        loads_table = {b"s": lambda self, obj: []}
         with self.assertRaises(ValueError) as context:
             bpickle.loads(b"s3:foo", loads_table)
         self.assertEqual("Corrupted data", str(context.exception))
