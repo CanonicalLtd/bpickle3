@@ -74,7 +74,8 @@ def dumps_bytes(obj):
 
 
 def dumps_unicode(obj):
-    return b"u%d:%s" % (len(obj), obj.encode("utf-8"))
+    obj = obj.encode("utf-8")
+    return b"u%d:%s" % (len(obj), obj)
 
 
 def dumps_list(obj, _dt=dumps_table):
@@ -102,7 +103,7 @@ def dumps_none(obj):
 
 
 def loads_bool(bytestring, pos):
-    return bool(int(bytestring[pos+1])), pos+2
+    return bool(int(bytestring[pos+1:pos+2])), pos+2
 
 
 def loads_int(bytestring, pos):
@@ -131,8 +132,8 @@ def loads_list(bytestring, pos, _lt=loads_table):
     pos += 1
     res = []
     append = res.append
-    while bytestring[pos] != b";":
-        obj, pos = _lt[bytestring[pos]](bytestring, pos)
+    while bytestring[pos:pos+1] != b";":
+        obj, pos = _lt[bytestring[pos:pos+1]](bytestring, pos)
         append(obj)
     return res, pos+1
 
@@ -141,8 +142,8 @@ def loads_tuple(bytestring, pos, _lt=loads_table):
     pos += 1
     res = []
     append = res.append
-    while bytestring[pos] != b";":
-        obj, pos = _lt[bytestring[pos]](bytestring, pos)
+    while bytestring[pos:pos+1] != b";":
+        obj, pos = _lt[bytestring[pos:pos+1]](bytestring, pos)
         append(obj)
     return tuple(res), pos+1
 
@@ -150,9 +151,9 @@ def loads_tuple(bytestring, pos, _lt=loads_table):
 def loads_dict(bytestring, pos, _lt=loads_table):
     pos += 1
     res = {}
-    while bytestring[pos] != b";":
-        key, pos = _lt[bytestring[pos]](bytestring, pos)
-        val, pos = _lt[bytestring[pos]](bytestring, pos)
+    while bytestring[pos:pos+1] != b";":
+        key, pos = _lt[bytestring[pos:pos+1]](bytestring, pos)
+        val, pos = _lt[bytestring[pos:pos+1]](bytestring, pos)
         res[key] = val
     return res, pos+1
 
