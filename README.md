@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/chrisglass/bpickle3.svg?branch=master)](https://travis-ci.org/chrisglass/bpickle3)
+[![Build Status](https://travis-ci.org/CanonicalLtd/bpickle3.svg?branch=master)](https://travis-ci.org/CanonicalLtd/bpickle3)
 
-bpickle3, a python3 serialization library
-=========================================
+bpickle3, a python2/3 serialization library
+===========================================
