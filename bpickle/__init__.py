@@ -192,6 +192,7 @@ if bytes == str:
     dumps_table.update({
         str: dumps_bytes,
         unicode: dumps_unicode,
+        long: dumps_int,
     })
 else:
     # Python 3.x: We need to map internal strings to bytestrings,
