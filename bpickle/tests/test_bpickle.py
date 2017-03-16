@@ -78,6 +78,16 @@ class BPickleTest(unittest.TestCase):
         wrong = b'zblah'  # 'z' is not a valid type character.
         self.assertRaises(ValueError, bpickle.loads, wrong)
 
+    def test_loads_broken_data(self):
+        """
+        If loads table somehow ends up using load function that does not
+        return a tuple of value and position, ValueError is thrown.
+        """
+        loads_table = {"s": lambda self, obj: []}
+        with self.assertRaises(ValueError) as context:
+            bpickle.loads(b"s3:foo", loads_table)
+        self.assertEqual("Corrupted data", str(context.exception))
+
     def test_ping_result_message_decode(self):
         """
         This is an example message received from an actual ping server. Let's

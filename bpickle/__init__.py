@@ -52,8 +52,7 @@ def loads(byte_string, _lt=loads_table):
         return _lt[unicode_string[0]](unicode_string, 0)[0]
     except KeyError as e:
         raise ValueError("Unknown type character: %s" % e)
-    except IndexError:  #pragma: nocover
-        # NOTE: Not sure if reachable (chrisglass during py3 conversion)
+    except IndexError:
         raise ValueError("Corrupted data")
 
 
