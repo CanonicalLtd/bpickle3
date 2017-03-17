@@ -2,9 +2,14 @@
 import unittest
 from hypothesis import given
 from hypothesis.strategies import (
+    binary,
+    booleans,
+    floats,
     integers,
+    just,
     lists,
     text,
+    tuples,
 )
 
 
@@ -25,23 +30,32 @@ class BPickleTest(unittest.TestCase):
         self.assertTrue("e" in repr(number))
         self.assertAlmostEquals(bpickle.loads(bpickle.dumps(number)), number)
 
-    @given(text())
-    def test_string(self, s):
-        assert bpickle.loads(bpickle.dumps(b'foo')) == b'foo'
+    @given(binary())
+    def test_bytes(self, s):
+        assert bpickle.loads(bpickle.dumps(s)) == s
 
-    def test_list(self):
+    # XXX: floats() tests for NaN as well which bpickle does not support.
+    @given(int_value=integers(), bytes_value=binary(), unicode_value=text(),
+           float_value=just(3.0))
+    def test_list(self, int_value, bytes_value, unicode_value, float_value):
         self.assertEqual(
-            bpickle.loads(bpickle.dumps([1, 2, u'hello', b'world', 3.0])),
-            [1, 2, u'hello', b'world', 3.0])
+            bpickle.loads(bpickle.dumps(
+                [int_value, unicode_value, bytes_value, float_value])),
+            [int_value, unicode_value, bytes_value, float_value])
 
     @given(lists(integers()))
     def test_inverted_lists(self, l):
         assert bpickle.loads(bpickle.dumps(l)) == l
 
-    def test_tuple(self):
-        data = bpickle.dumps((1, [], 2, u'hello', b'world', 3.0))
-        self.assertEqual(bpickle.loads(data),
-                         (1, [], 2, u'hello', b'world', 3.0))
+    # XXX: floats() tests for NaN as well which bpickle does not support.
+    @given(int_value=integers(), bytes_value=binary(), unicode_value=text(),
+           float_value=just(3.0))
+    def test_tuple(self, int_value, bytes_value, unicode_value, float_value):
+        data = bpickle.dumps(
+            (int_value, [], unicode_value, bytes_value, float_value))
+        self.assertEqual(
+            bpickle.loads(data),
+            (int_value, [], unicode_value, bytes_value, float_value))
 
     def test_none(self):
         self.assertEqual(bpickle.loads(bpickle.dumps(None)), None)
@@ -51,11 +65,9 @@ class BPickleTest(unittest.TestCase):
         loaded_unicode = bpickle.loads(dumped_unicode)
         self.assertEqual(u'☃', loaded_unicode)
 
-    def test_bool(self):
-        self.assertEqual(bpickle.loads(bpickle.dumps(True)), True)
-
-    def test_bool_false(self):
-        self.assertEqual(bpickle.loads(bpickle.dumps(False)), False)
+    @given(booleans())
+    def test_bool(self, boolean):
+        self.assertEqual(bpickle.loads(bpickle.dumps(boolean)), boolean)
 
     def test_dict(self):
         dumped_tostr = bpickle.dumps({True: u"hello"})
@@ -66,8 +78,8 @@ class BPickleTest(unittest.TestCase):
                          {True: False})
 
     def test_long(self):
-        long = 99999999999999999999999999999
-        self.assertEqual(bpickle.loads(bpickle.dumps(long)), long)
+        long_value = 99999999999999999999999999999
+        self.assertEqual(bpickle.loads(bpickle.dumps(long_value)), long_value)
 
     def test_loads_empty_string(self):
         self.assertRaises(ValueError, bpickle.loads, b"")
