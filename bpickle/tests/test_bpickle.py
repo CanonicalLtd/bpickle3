@@ -34,9 +34,8 @@ class BPickleTest(unittest.TestCase):
     def test_bytes(self, s):
         assert bpickle.loads(bpickle.dumps(s)) == s
 
-    # XXX: floats() tests for NaN as well which bpickle does not support.
     @given(int_value=integers(), bytes_value=binary(), unicode_value=text(),
-           float_value=just(3.0))
+           float_value=floats(allow_nan=False, allow_infinity=False))
     def test_list(self, int_value, bytes_value, unicode_value, float_value):
         self.assertEqual(
             bpickle.loads(bpickle.dumps(
@@ -47,9 +46,8 @@ class BPickleTest(unittest.TestCase):
     def test_inverted_lists(self, l):
         assert bpickle.loads(bpickle.dumps(l)) == l
 
-    # XXX: floats() tests for NaN as well which bpickle does not support.
     @given(int_value=integers(), bytes_value=binary(), unicode_value=text(),
-           float_value=just(3.0))
+           float_value=floats(allow_nan=False, allow_infinity=False))
     def test_tuple(self, int_value, bytes_value, unicode_value, float_value):
         data = bpickle.dumps(
             (int_value, [], unicode_value, bytes_value, float_value))
